@@ -1,2 +1,5 @@
 venv
-/data
+/src/components/data
+/src/components/artifacts
+*.log
+__pycache__
