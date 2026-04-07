@@ -1,0 +1,15 @@
+# --- DATA & ENGINEERING (For Ingestion/Transformation) ---
+pandas
+numpy
+requests
+sqlalchemy
+psycopg2-binary
+
+# --- ML & OPS (For the "Brains") ---
+scikit-learn
+mlflow
+
+# --- ARCHITECTURE (For the "Skeleton") ---
+pytest
+python-dotenv
+-e .
