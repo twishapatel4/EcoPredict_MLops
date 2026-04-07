@@ -12,4 +12,7 @@ mlflow
 # --- ARCHITECTURE (For the "Skeleton") ---
 pytest
 python-dotenv
+
+# Utilities
+dvc
 -e .
