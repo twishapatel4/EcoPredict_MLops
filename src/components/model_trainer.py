@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from xgboost import XGBRegressor
-from sklearn.metrics import r2_score
+# from sklearn.metrics import r2_score
 
 from src.exception import CustomException
 from src.logger import logging
@@ -13,7 +13,8 @@ from src.utils import save_object, evaluate_models
 
 import mlflow
 import mlflow.sklearn
-from urllib.parse import urlparse
+import dagshub
+# from urllib.parse import urlparse
 
 @dataclass
 class ModelTrainerConfig:
@@ -78,13 +79,14 @@ class ModelTrainer:
             mlruns_path = os.path.join(project_root, "mlruns")
         
             # mlflow.set_tracking_uri(f"file:.//{mlruns_path}") 
-            mlflow.set_tracking_uri("sqlite:///mlflow.db") 
+            dagshub.init(repo_owner='twishapatel4', repo_name='GlobalEnergy', mlflow=True)
+            # mlflow.set_tracking_uri("sqlite:///mlflow.db") 
 
             mlflow.set_experiment("EcoPredict_Global_Energy")
             # 1. Start a "Run" (A recorded attempt)
             with mlflow.start_run():
                 # 2. Log "How" you trained it (Parameters)
-                mlflow.log_param("model_name", best_model_name)
+                mlflow.log_param("algorithm", best_model_name)
                 
                 # 3. Log "How well" it did (Metrics)
                 mlflow.log_metric("r2_score", best_model_score)
