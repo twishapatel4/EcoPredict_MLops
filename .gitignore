@@ -1,5 +1,6 @@
 venv
-/src/components/data
-/src/components/artifacts
+data
+artifacts
 *.log
 __pycache__
+mlruns
