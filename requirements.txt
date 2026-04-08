@@ -8,6 +8,7 @@ psycopg2-binary
 # --- ML & OPS (For the "Brains") ---
 scikit-learn
 mlflow
+xgboost
 
 # --- ARCHITECTURE (For the "Skeleton") ---
 pytest
@@ -15,4 +16,6 @@ python-dotenv
 
 # Utilities
 dvc
+dagshub
+dill
 -e .

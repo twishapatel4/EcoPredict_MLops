@@ -1,2 +1,6 @@
 venv
-/data
+data
+artifacts
+*.log
+__pycache__
+mlruns
