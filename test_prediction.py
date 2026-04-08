@@ -13,7 +13,7 @@ data = CustomData(
     year=2023,
     energy_per_capita=1500.707,
     gdp_per_capita=2000.136473023602,
-    iso_code="PAK"
+    iso_code="AND"
 )
 
 # 2. Convert to DF (Ensure method name matches your CustomData class)
