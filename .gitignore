@@ -1,6 +1,33 @@
-venv
-data
-artifacts
-*.log
-__pycache__
-mlruns
+# --- Python Environment ---
+venv/
+bin/
+lib/
+share/
+pyvenv.cfg
+
+# --- Python Caches & Packaging ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+ecopredict.egg-info/    # I see this in your screenshot - IGNORE IT
+
+# --- Data & Artifacts (Handled by DVC) ---
+# We ignore the actual files, but Git will still track the .dvc files
+data/
+artifacts/
+logs/
+
+# --- MLOps & Tracking ---
+mlruns/                 # These are tiny local files from MLflow
+mlflow.db               # This is your local database
+logs/                   # Production logs should stay on your machine
+
+# --- Environment Secrets ---
+.env
+.DS_Store (for Mac users)
+
+# --- IDE Settings ---
+.vscode/
+.idea/

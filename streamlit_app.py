@@ -100,7 +100,7 @@ if st.sidebar.button("Run Health Audit"):
         
         # In a real app, you'd pull from your 'prediction_logs' table
         # For now, we compare the model against a sample of its own training data
-        sample_data = pd.read_csv("data/raw_data/raw_data.csv").sample(100)
+        sample_data = pd.read_csv("data/raw_data.csv").sample(100)
         
         with st.spinner("Generating Statistical Audit..."):
             report_path = monitor.initiate_monitoring(sample_data)

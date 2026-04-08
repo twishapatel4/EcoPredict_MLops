@@ -13,6 +13,9 @@ xgboost
 # --- ARCHITECTURE (For the "Skeleton") ---
 pytest
 python-dotenv
+evidently
+fastapi
+uvicorn
 
 # Utilities
 dvc

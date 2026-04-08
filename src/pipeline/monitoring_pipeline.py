@@ -1,58 +1,60 @@
 import pandas as pd
 import os
 import sys
-from evidently.report import Report
-from evidently.metric_preset import DataDriftPreset, TargetDriftPreset, DataQualityPreset
+
+# 1. USE THE LEGACY REPORT CLASS (This matches the presets)
+from evidently.legacy.report.report import Report
+
+# 2. USE THE LEGACY PRESETS
+from evidently.legacy.metric_preset import DataDriftPreset, TargetDriftPreset, DataQualityPreset
+
 from src.exception import CustomException
 from src.logger import logging
 
 class ModelMonitoring:
     def __init__(self):
-        self.reference_data_path = os.path.join("data", "raw_data", "raw_data.csv")
+        # Ensure path points to the correct location in the root
+        self.reference_data_path = os.path.join("data", "raw_data.csv")
         self.report_path = os.path.join("artifacts", "evidently_report.html")
 
     def initiate_monitoring(self, current_df):
-        """
-        Compares reference data with current user input data
-        """
         try:
             logging.info("Starting Evidently AI Monitoring Report generation")
             
-            # 1. Load Reference Data
+            # Load Reference Data
+            if not os.path.exists(self.reference_data_path):
+                raise Exception(f"Reference data not found at {self.reference_data_path}")
+                
             ref_df = pd.read_csv(self.reference_data_path)
             
-            # 2. Keep only the columns the model actually uses
+            # Select columns
             relevant_cols = ['year', 'energy_per_capita', 'gdp_per_capita', 'co2_per_capita']
             ref_df = ref_df[relevant_cols]
             
-            # Ensure current_df has same columns (if prediction isn't available, we check features)
-            # For this demo, we assume current_df is a batch of new data
-            
-            # 3. Define the Report
+            # 3. Define the Report (This now uses the Legacy Engine)
             report = Report(metrics=[
-                DataDriftPreset(), # Detects if GDP/Energy distributions have shifted
-                DataQualityPreset(), # Detects missing values or outliers
-                TargetDriftPreset() # Detects if the predicted CO2 is behaving weirdly
+                DataDriftPreset(),
+                DataQualityPreset(),
+                TargetDriftPreset()
             ])
 
-            # 4. Run the Audit
-            logging.info("Running drift detection algorithms...")
+            logging.info("Running drift detection...")
             report.run(reference_data=ref_df, current_data=current_df)
 
-            # 5. Save as an Interactive HTML Dashboard
+            # Save the result
             report.save_html(self.report_path)
-            logging.info(f"Evidently Report saved successfully at {self.report_path}")
-            
             return self.report_path
 
         except Exception as e:
             raise CustomException(e, sys)
 
+# ... rest of your script stays the same ...
+
 if __name__ == "__main__":
     # Test logic: We compare the training data against a "modified" version of itself 
     # to simulate real-world drift.
     monitor = ModelMonitoring()
-    train_data = pd.read_csv("data/raw_data/raw_data.csv")
+    train_data = pd.read_csv("data/raw_data.csv")
     
     # Simulate "Current" data by adding some noise to GDP
     current_simulation = train_data.sample(200).copy()
