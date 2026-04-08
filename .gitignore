@@ -31,3 +31,5 @@ logs/                   # Production logs should stay on your machine
 # --- IDE Settings ---
 .vscode/
 .idea/
+/data
+/artifacts
