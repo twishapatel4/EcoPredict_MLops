@@ -14,8 +14,8 @@ class PredictPipeline:
         try:
             logging.info("Starting prediction pipeline")
             # Load the preprocessor and model objects
-            preprocessor_path = os.path.join('artifacts', "preprocessor.pkl")
-            model_path = os.path.join('artifacts', "model.pkl")
+            preprocessor_path = os.path.join('artifacts', "preprocessor2.pkl")
+            model_path = os.path.join('artifacts', "model2.pkl")
 
             preprocessor = load_object(file_path=preprocessor_path)
             model = load_object(file_path=model_path)
@@ -37,8 +37,8 @@ class PredictPipeline:
         Calculates SHAP values to explain the prediction
         """
         try:
-            model_path = os.path.join("artifacts", "model.pkl")
-            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+            model_path = os.path.join("artifacts", "model2.pkl")
+            preprocessor_path = os.path.join("artifacts", "preprocessor2.pkl")
 
             model = load_object(file_path=model_path)
             preprocessor = load_object(file_path=preprocessor_path)
