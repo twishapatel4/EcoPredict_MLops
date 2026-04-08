@@ -79,7 +79,7 @@ class ModelTrainer:
             mlruns_path = os.path.join(project_root, "mlruns")
         
             # mlflow.set_tracking_uri(f"file:.//{mlruns_path}") 
-            dagshub.init(repo_owner='twishapatel4', repo_name='GlobalEnergy', mlflow=True)
+            dagshub.init(repo_owner='twishapatel4', repo_name='EcoPredict_MLops', mlflow=True)
             # mlflow.set_tracking_uri("sqlite:///mlflow.db") 
 
             mlflow.set_experiment("EcoPredict_Global_Energy")
