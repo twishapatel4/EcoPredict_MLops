@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DataIngestionConfig:
-    raw_data_path: str = os.path.join('data', "raw_data.csv")
+    raw_data_path: str = os.path.join('data', "raw_data2.csv")
 
 class DataIngestion:
     def __init__(self):
@@ -52,6 +52,8 @@ class DataIngestion:
             
             # Drop the raw columns we don't need for the final model
             df = df.drop(columns=['gdp', 'population'])
+
+            df = df.dropna(subset=['gdp_per_capita', 'energy_per_capita'])
 
             # 4. Filter for our date range (2000 - 2022)
             df = df[(df['year'] >= 2000) & (df['year'] <= 2022)]

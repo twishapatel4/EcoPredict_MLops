@@ -13,7 +13,7 @@ data = CustomData(
     year=2023,
     energy_per_capita=1500.707,
     gdp_per_capita=2000.136473023602,
-    iso_code="AND"
+    iso_code="USA"
 )
 
 # 2. Convert to DF (Ensure method name matches your CustomData class)
@@ -45,7 +45,7 @@ shap.summary_plot(
 
 # Save with 'tight' layout to ensure labels aren't cut off
 plt.title(f"CO2 Prediction Explanation for {data.iso_code}")
-plt.savefig("artifacts/shap_explanations2.png", bbox_inches='tight', dpi=300)
+plt.savefig("artifacts/explanations234.png", bbox_inches='tight', dpi=300)
 plt.close(fig)
 
 print("✅ SHAP explanation saved as artifacts/shap_explanation.png")

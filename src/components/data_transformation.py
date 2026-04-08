@@ -16,7 +16,7 @@ from src.utils import save_object
 @dataclass
 class DataTransformationConfig:
     # Path where the preprocessor pickle file will be saved
-    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor2.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -134,7 +134,7 @@ class DataTransformation:
 if __name__ == "__main__":
     try:
         # UPDATED PATH: Looking for raw_data in data/raw_data/
-        raw_data_file = os.path.join('data', 'raw_data.csv')
+        raw_data_file = os.path.join('data', 'raw_data2.csv')
         
         if not os.path.exists(raw_data_file):
             print(f"Error: {raw_data_file} not found. Please run Data Ingestion first.")
