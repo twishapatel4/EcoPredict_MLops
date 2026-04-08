@@ -1,6 +1,7 @@
 import sys
 import os
 import pandas as pd
+import shap
 from src.exception import CustomException
 from src.logger import logging
 from src.utils import load_object
@@ -28,6 +29,34 @@ class PredictPipeline:
             preds = model.predict(data_scaled)
 
             return preds
+        except Exception as e:
+            raise CustomException(e, sys)
+        
+    def explain(self, features):
+        """
+        Calculates SHAP values to explain the prediction
+        """
+        try:
+            model_path = os.path.join("artifacts", "model.pkl")
+            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+
+            model = load_object(file_path=model_path)
+            preprocessor = load_object(file_path=preprocessor_path)
+
+            # 1. We must transform the features exactly like we did for prediction
+            data_transformed = preprocessor.transform(features)
+            
+            # 2. Initialize the Explainer
+            # TreeExplainer is specialized for XGBoost/RandomForest
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(data_transformed)
+
+            # 3. Get Feature Names (This is tricky with ColumnTransformer)
+            # We need to know which column name belongs to which number
+            feature_names = preprocessor.get_feature_names_out()
+
+            return shap_values, data_transformed, feature_names
+
         except Exception as e:
             raise CustomException(e, sys)
         

@@ -17,5 +17,8 @@ python-dotenv
 # Utilities
 dvc
 dagshub
+shap
+matplotlib
+streamlit
 dill
 -e .
