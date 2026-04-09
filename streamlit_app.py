@@ -60,21 +60,30 @@ if st.sidebar.button("Generate Forecast"):
         # 5. SHAP Explainability Section
         st.divider()
         st.subheader("🔍 Explainable AI: Why this prediction?")
-        st.write("The chart below shows how each feature contributed to the final forecast.")
+        col1, col2 = st.columns([0.4, 0.6]) 
 
-        with st.spinner("Generating SHAP explanation..."):
-            shap_values, data_transformed, feature_names = pipeline.explain(input_df)
-            
-            # Create the plot
-            fig, ax = plt.subplots(figsize=(4, 2))
-            shap.summary_plot(
-                shap_values, 
-                data_transformed, 
-                feature_names=feature_names, 
-                plot_type="bar", 
-                show=False
-            )
-            st.pyplot(plt.gcf())
+        with col1:
+            with st.spinner("Generating SHAP explanation..."):
+                shap_values, data_transformed, feature_names = pipeline.explain(input_df)
+                    
+                    # Step 2: Set a small figsize (Width, Height) in inches
+                    # To make it truly small, we use (5, 3) or (4, 2)
+                fig, ax = plt.subplots(figsize=(5, 3)) 
+                    
+                import shap
+                shap.summary_plot(
+                    shap_values, 
+                    data_transformed, 
+                    feature_names=feature_names, 
+                    plot_type="bar", 
+                    show=False,
+                )
+
+                plt.xticks(fontsize=8)
+                plt.yticks(fontsize=8)
+                plt.xlabel("SHAP Value", fontsize=8)
+
+                st.pyplot(fig, use_container_width=False)        
             
         st.info("""
             **How to read this:** 
