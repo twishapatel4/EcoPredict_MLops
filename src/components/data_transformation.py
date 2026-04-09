@@ -80,17 +80,24 @@ class DataTransformation:
 
             target_column_name = "co2_per_capita"
             
-            # --- NEW CHRONOLOGICAL SPLITTING LOGIC ---
-            logging.info("Applying 3-way split: Train (2000-2019), Val (2020-2021), Test (2022)")
+            # --- FINAL OPTIMIZED CHRONOLOGICAL SPLIT ---
+            # Train: 2000-2021 (maximize training data for better patterns)
+            # Test: 2022 (single year for validation)
+            logging.info("Applying 2-way split: Train (2000-2021), Test (2022)")
             
-            train_df = df[(df['year'] >= 2000) & (df['year'] <= 2019)]
-            val_df   = df[(df['year'] >= 2020) & (df['year'] <= 2021)]
-            test_df  = df[(df['year'] >= 2022) & (df['year'] <= 2022)]
+            train_df = df[df['year'] < 2022]
+            test_df  = df[df['year'] >= 2022]
+            
+            # For the 3-return value compatibility, val_df = test_df
+            val_df = test_df
 
-            # Check if datasets are empty (common if the CSV doesn't have 2024 data yet)
             if test_df.empty:
-                logging.warning("Test dataframe is empty! Check if your CSV contains data for 2023-2024.")
+                logging.warning("Test dataframe is empty! Check if your CSV contains 2022 data.")
 
+            # Inside initiate_data_transformation...
+            train_df.to_csv(os.path.join("artifacts", "reference_data.csv"), index=False)
+            test_df.to_csv(os.path.join("artifacts", "current_data.csv"), index=False)
+            logging.info("Saved reference and current dataframes to artifacts")
             # Separate Features and Target
             def split_input_target(data):
                 X = data.drop(columns=[target_column_name, 'country'], axis=1)
