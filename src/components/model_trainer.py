@@ -17,7 +17,7 @@ import dagshub
 
 @dataclass
 class ModelTrainerConfig:
-    trained_model_file_path = os.path.join("artifacts", "model3.pkl")
+    trained_model_file_path = os.path.join("artifacts", "model4.pkl")
 
 class ModelTrainer:
     def __init__(self):

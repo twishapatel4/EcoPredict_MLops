@@ -16,7 +16,7 @@ from src.utils import save_object
 @dataclass
 class DataTransformationConfig:
     # Path where the preprocessor pickle file will be saved
-    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor3.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor4.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -29,7 +29,7 @@ class DataTransformation:
         """
         try:
             # We use these features to predict CO2 emissions
-            numerical_columns = ["year", "energy_per_capita", "gdp_per_capita"]
+            numerical_columns = ["year", "energy_per_capita", "gdp_per_capita","energy_velocity","energy_momentum","gdp_energy_ratio"]
             categorical_columns = ["iso_code"]
 
             # Numerical Pipeline: Handling missing values and scaling
@@ -75,6 +75,22 @@ class DataTransformation:
             df = pd.read_csv(raw_path)
             logging.info("Read raw data successfully")
             
+            df=df.sort_values(['iso_code', 'year'])
+
+            df['energy_velocity'] = df.groupby('iso_code')['energy_per_capita'].diff()
+
+            # 3. Energy Momentum: 3-year rolling average of velocity
+            df['energy_momentum'] = df.groupby('iso_code')['energy_velocity'].transform(
+                lambda x: x.rolling(window=3, min_periods=1).mean()
+            )
+
+            # 4. Economic Efficiency: Wealth produced per unit of energy
+            # We add a small 1e-6 to avoid division by zero errors
+            df['gdp_energy_ratio'] = df['gdp_per_capita'] / (df['energy_per_capita'] + 1e-6)
+
+            # 5. Handle NaNs created by .diff()
+            df.fillna(0, inplace=True)
+
             logging.info("Obtaining preprocessing object")
             preprocessing_obj = self.get_data_transformer_object()
 
