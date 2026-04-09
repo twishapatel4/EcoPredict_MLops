@@ -33,6 +33,7 @@ class ModelMonitoring:
             
             # 3. Define the Report (This now uses the Legacy Engine)
             report = Report(metrics=[
+                # DataDriftPreset(num_stattest_threshold=0.14),
                 DataDriftPreset(),
                 DataQualityPreset(),
                 TargetDriftPreset()
@@ -54,10 +55,14 @@ if __name__ == "__main__":
     # Test logic: We compare the training data against a "modified" version of itself 
     # to simulate real-world drift.
     monitor = ModelMonitoring()
-    train_data = pd.read_csv("data/raw_data.csv")
+    df = pd.read_csv("data/raw_data.csv")
+    # train_data = pd.read_csv("data/raw_data.csv")
+    train_df = df[df['year'] < 2019].copy()
+    test_df = df[df['year'] >= 2019].copy()
     
     # Simulate "Current" data by adding some noise to GDP
-    current_simulation = train_data.sample(200).copy()
+    # current_simulation = test_df.sample(200,random_state=42).copy()
+    current_simulation = test_df.sample(min(200, len(test_df)), random_state=42)
     current_simulation['gdp_per_capita'] = current_simulation['gdp_per_capita'] * 1.2 
     
     report_file = monitor.initiate_monitoring(current_simulation)

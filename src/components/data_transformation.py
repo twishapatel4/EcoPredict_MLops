@@ -74,48 +74,54 @@ class DataTransformation:
         try:
             df = pd.read_csv(raw_path)
             logging.info("Read raw data successfully")
-
+            
             logging.info("Obtaining preprocessing object")
             preprocessing_obj = self.get_data_transformer_object()
 
             target_column_name = "co2_per_capita"
             
-            # 1. Chronological Split (Time-Series requirement for 2026 AI Standard)
-            # We train on past data and test on future data
-            logging.info("Splitting data into train and test based on Year (2019 threshold)")
-            train_df = df[df['year'] < 2022]
-            test_df = df[df['year'] >= 2022]
-
-            # 2. Separate Input Features (X) and Target (y)
-            # We drop 'country' because it's redundant with 'iso_code'
-            input_feature_train_df = train_df.drop(columns=[target_column_name, 'country'], axis=1)
-            target_feature_train_df = train_df[target_column_name]
-
-            input_feature_test_df = test_df.drop(columns=[target_column_name, 'country'], axis=1)
-            target_feature_test_df = test_df[target_column_name]
-
-            # 3. Apply Transformation
-            logging.info("Applying preprocessing object on training and testing dataframes")
+            # --- NEW CHRONOLOGICAL SPLITTING LOGIC ---
+            logging.info("Applying 3-way split: Train (2000-2019), Val (2020-2021), Test (2022)")
             
-            input_feature_train_arr = preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr = preprocessing_obj.transform(input_feature_test_df)
+            train_df = df[(df['year'] >= 2000) & (df['year'] <= 2019)]
+            val_df   = df[(df['year'] >= 2020) & (df['year'] <= 2021)]
+            test_df  = df[(df['year'] >= 2022) & (df['year'] <= 2022)]
 
-            # --- DENSE ARRAY CONVERSION (The Fix for the ValueError) ---
-            if hasattr(input_feature_train_arr, "toarray"):
-                input_feature_train_arr = input_feature_train_arr.toarray()
-            if hasattr(input_feature_test_arr, "toarray"):
-                input_feature_test_arr = input_feature_test_arr.toarray()
+            # Check if datasets are empty (common if the CSV doesn't have 2024 data yet)
+            if test_df.empty:
+                logging.warning("Test dataframe is empty! Check if your CSV contains data for 2023-2024.")
 
-            # 4. Combine X and y back into final arrays for the Model Trainer
-            train_arr = np.c_[
-                input_feature_train_arr, np.array(target_feature_train_df)
-            ]
-            test_arr = np.c_[
-                input_feature_test_arr, np.array(target_feature_test_df)
-            ]
+            # Separate Features and Target
+            def split_input_target(data):
+                X = data.drop(columns=[target_column_name, 'country'], axis=1)
+                y = data[target_column_name]
+                return X, y
 
-            # 5. Save the 'Math Recipe' (preprocessor.pkl)
-            logging.info("Saving preprocessing object to artifacts folder.")
+            input_train_df, target_train_df = split_input_target(train_df)
+            input_val_df, target_val_df     = split_input_target(val_df)
+            input_test_df, target_test_df   = split_input_target(test_df)
+
+            # Apply Transformation
+            logging.info("Fitting preprocessor on Train and transforming Val/Test")
+            
+            train_arr_features = preprocessing_obj.fit_transform(input_train_df)
+            val_arr_features   = preprocessing_obj.transform(input_val_df)
+            test_arr_features  = preprocessing_obj.transform(input_test_df)
+
+            # Ensure dense arrays
+            def ensure_dense(arr):
+                return arr.toarray() if hasattr(arr, "toarray") else arr
+
+            train_arr_features = ensure_dense(train_arr_features)
+            val_arr_features   = ensure_dense(val_arr_features)
+            test_arr_features  = ensure_dense(test_arr_features)
+
+            # Combine features and targets
+            train_arr = np.c_[train_arr_features, np.array(target_train_df)]
+            val_arr   = np.c_[val_arr_features,   np.array(target_val_df)]
+            test_arr  = np.c_[test_arr_features,  np.array(target_test_df)]
+
+            logging.info("Saving preprocessing object.")
             save_object(
                 file_path=self.data_transformation_config.preprocessor_obj_file_path,
                 obj=preprocessing_obj
@@ -123,6 +129,7 @@ class DataTransformation:
 
             return (
                 train_arr,
+                val_arr,
                 test_arr,
                 self.data_transformation_config.preprocessor_obj_file_path,
             )
@@ -130,23 +137,9 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e, sys)
 
-# --- STANDALONE EXECUTION BLOCK ---
 if __name__ == "__main__":
-    try:
-        # UPDATED PATH: Looking for raw_data in data/raw_data/
-        raw_data_file = os.path.join('data', 'raw_data3.csv')
-        
-        if not os.path.exists(raw_data_file):
-            print(f"Error: {raw_data_file} not found. Please run Data Ingestion first.")
-        else:
-            data_transformation = DataTransformation()
-            train_arr, test_arr, preprocessor_path = data_transformation.initiate_data_transformation(raw_data_file)
-            
-            print("--- Transformation Success ---")
-            print(f"Preprocessor Object saved at: {preprocessor_path}")
-            print(f"Train Array shape: {train_arr.shape}")
-            print(f"Test Array shape: {test_arr.shape}")
-
-    except Exception as e:
-        # Capture error and print detail
-        print(f"Capture Detail: {e}")
+    raw_data_file = os.path.join('data', 'raw_data3.csv')
+    if os.path.exists(raw_data_file):
+        dt = DataTransformation()
+        train, val, test, obj_path = dt.initiate_data_transformation(raw_data_file)
+        print(f"Splits complete: Train {train.shape}, Val {val.shape}, Test {test.shape}")
