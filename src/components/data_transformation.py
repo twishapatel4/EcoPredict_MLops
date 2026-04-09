@@ -16,7 +16,7 @@ from src.utils import save_object
 @dataclass
 class DataTransformationConfig:
     # Path where the preprocessor pickle file will be saved
-    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor2.pkl")
+    preprocessor_obj_file_path = os.path.join('artifacts', "preprocessor3.pkl")
 
 class DataTransformation:
     def __init__(self):
@@ -83,8 +83,8 @@ class DataTransformation:
             # 1. Chronological Split (Time-Series requirement for 2026 AI Standard)
             # We train on past data and test on future data
             logging.info("Splitting data into train and test based on Year (2019 threshold)")
-            train_df = df[df['year'] < 2019]
-            test_df = df[df['year'] >= 2019]
+            train_df = df[df['year'] < 2022]
+            test_df = df[df['year'] >= 2022]
 
             # 2. Separate Input Features (X) and Target (y)
             # We drop 'country' because it's redundant with 'iso_code'
@@ -134,7 +134,7 @@ class DataTransformation:
 if __name__ == "__main__":
     try:
         # UPDATED PATH: Looking for raw_data in data/raw_data/
-        raw_data_file = os.path.join('data', 'raw_data2.csv')
+        raw_data_file = os.path.join('data', 'raw_data3.csv')
         
         if not os.path.exists(raw_data_file):
             print(f"Error: {raw_data_file} not found. Please run Data Ingestion first.")

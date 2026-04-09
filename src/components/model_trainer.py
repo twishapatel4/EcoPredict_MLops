@@ -18,7 +18,7 @@ import dagshub
 
 @dataclass
 class ModelTrainerConfig:
-    trained_model_file_path = os.path.join("artifacts", "model2.pkl")
+    trained_model_file_path = os.path.join("artifacts", "model3.pkl")
 
 class ModelTrainer:
     def __init__(self):
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     import os
     
     # 1. We need the data from Phase 2
-    raw_data_file = os.path.join('data', 'raw_data2.csv')
+    raw_data_file = os.path.join('data', 'raw_data3.csv')
     data_transformation = DataTransformation()
     train_arr, test_arr, _ = data_transformation.initiate_data_transformation(raw_data_file)
     

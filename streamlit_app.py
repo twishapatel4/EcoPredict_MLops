@@ -65,12 +65,8 @@ if st.sidebar.button("Generate Forecast"):
         with col1:
             with st.spinner("Generating SHAP explanation..."):
                 shap_values, data_transformed, feature_names = pipeline.explain(input_df)
-                    
-                    # Step 2: Set a small figsize (Width, Height) in inches
-                    # To make it truly small, we use (5, 3) or (4, 2)
                 fig, ax = plt.subplots(figsize=(5, 3)) 
                     
-                import shap
                 shap.summary_plot(
                     shap_values, 
                     data_transformed, 
@@ -79,9 +75,9 @@ if st.sidebar.button("Generate Forecast"):
                     show=False,
                 )
 
-                plt.xticks(fontsize=8)
-                plt.yticks(fontsize=8)
-                plt.xlabel("SHAP Value", fontsize=8)
+                plt.xticks(fontsize=10)
+                plt.yticks(fontsize=10)
+                plt.xlabel("SHAP Value", fontsize=10)
 
                 st.pyplot(fig, use_container_width=False)        
             

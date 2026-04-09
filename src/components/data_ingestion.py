@@ -7,7 +7,7 @@ from dataclasses import dataclass
 
 @dataclass
 class DataIngestionConfig:
-    raw_data_path: str = os.path.join('data', "raw_data2.csv")
+    raw_data_path: str = os.path.join('data', "raw_data3.csv")
 
 class DataIngestion:
     def __init__(self):
@@ -56,7 +56,7 @@ class DataIngestion:
             df = df.dropna(subset=['gdp_per_capita', 'energy_per_capita'])
 
             # 4. Filter for our date range (2000 - 2022)
-            df = df[(df['year'] >= 2000) & (df['year'] <= 2022)]
+            df = df[(df['year'] >=1990 ) & (df['year'] <= 2024)]
 
             # 5. Save the Cleaned Raw Data
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path), exist_ok=True)
